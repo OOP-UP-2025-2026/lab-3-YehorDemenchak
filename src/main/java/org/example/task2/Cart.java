@@ -4,60 +4,66 @@ import java.util.Arrays;
 
 public class Cart {
 
-    public Item[] contents;
-    int index;
+    private Item[] contents;
+    private int index;
 
-    Cart(Item[] _contents) {
-        this.contents = _contents;
+    public Cart(Item[] contents) {
+        this.contents = contents;
+        this.index = 0;
     }
 
-    public void removeById(int itemIndex) {
+    public void add(Item item) {
+        if (this.isFull())
+            throw new IllegalStateException("The cart is full");
 
-        if (index == 0)
+        this.contents[this.index] = item;
+        this.index++;
+    }
+
+    public void removeById(long id) {
+        if (this.isEmpty()) {
             return;
+        }
 
-        int foundItemIndex = findItemInArray(contents[itemIndex]);
+        int foundItemIndex = this.findItemInArray(id);
 
         if (foundItemIndex == -1)
             return;
 
-        if (foundItemIndex == index - 1) {
-            contents[index - 1] = null;
-            index--;
-            return;
-        }
-
-        shiftArray(foundItemIndex);
+        this.shiftArray(foundItemIndex);
     }
 
     public void shiftArray(int itemIndex) {
-        for (int i = itemIndex; i < index - 1; i++) {
-            contents[i] = contents[i + 1];
+        for (int i = itemIndex; i < this.index - 1; i++) {
+            this.contents[i] = this.contents[i + 1];
         }
-        contents[index-1] = null;
-        index--;
+        this.contents[this.index - 1] = null;
+        this.index--;
     }
 
-    public int findItemInArray(Item item) {
-        for (int i = 0; i < index; i++) {
-            if (contents[i].id == item.id) {
+    public int findItemInArray(long id) {
+        for (int i = 0; i < this.index; i++) {
+            if (this.contents[i].getId() == id) {
                 return i;
             }
         }
-
         return -1;
     }
 
-    void add(Item item) {
-        if (isCartFull())
-            return;
-
-        contents[index] = item;
-        index++;
+    public boolean isFull() {
+        return this.index == this.contents.length;
     }
 
-    public boolean isCartFull() {
-        return index == contents.length;
+    public boolean isEmpty() {
+        return this.index == 0;
+    }
+
+    public int getCurrentSize() {
+        return this.index;
+    }
+
+    public Item getItemAt(int index) {
+        return this.contents[index];
     }
 
     @Override
